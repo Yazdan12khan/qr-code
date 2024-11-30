@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium URL to QR Code Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Global styles */
+        body {
+            font-family: 'Playfair Display', serif;
+            background: linear-gradient(135deg, #6a82fb, #fc5c7d);
+            background-size: 400% 400%;
+            animation: gradientAnimation 5s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 30px 50px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            animation: slideUp 1s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #2ecc71;
+            animation: bounceIn 1s ease-out;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            60% {
+                transform: translateY(30px);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        input {
+            padding: 14px;
+            font-size: 1.2rem;
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            outline: none;
+            transition: all 0.4s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #2ecc71;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.8);
+            transform: scale(1.05);
+        }
+
+        button {
+            padding: 14px 28px;
+            font-size: 1.2rem;
+            background-color: #00bcd4;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2ecc71;
+            transform: translateY(-5px) rotate(5deg);
+        }
+
+        button:active {
+            transform: translateY(2px);
+        }
+
+        #qrCodeContainer {
+            margin-top: 30px;
+            display: none;
+            animation: fadeInZoom 1s forwards;
+        }
+
+        @keyframes fadeInZoom {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        canvas {
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            animation: popIn 0.8s ease-out;
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Popup message styles */
+        #errorMessage {
+            display: none;
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #e74c3c;
+            color: #fff;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+            animation: popupAnimation 1s ease-out;
+        }
+
+        @keyframes popupAnimation {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Generate QR Code from URL</h1>
+        <input type="text" id="urlInput" placeholder="Enter your URL here" />
+        <button id="generateBtn">Generate QR Code</button>
+
+        <div id="qrCodeContainer">
+            <canvas id="qrCode"></canvas>
+        </div>
+
+        <!-- Error message popup -->
+        <div id="errorMessage">Please enter a valid URL.</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script>
+        document.getElementById('generateBtn').addEventListener('click', function () {
+            var url = document.getElementById('urlInput').value;
+
+            // URL validation using regex
+            var urlPattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+
+            // Clear the input field immediately after clicking the button
+            document.getElementById('urlInput').value = '';
+
+            if (urlPattern.test(url)) {
+                var qrCodeContainer = document.getElementById('qrCodeContainer');
+                qrCodeContainer.style.display = 'none'; // Hide QR Code initially
+
+                // Add a small delay before showing the QR code
+                setTimeout(function () {
+                    QRCode.toCanvas(document.getElementById('qrCode'), url, function (error) {
+                        if (error) {
+                            console.error(error);
+                            alert('Error generating QR Code.');
+                        } else {
+                            qrCodeContainer.style.display = 'block'; // Show QR Code
+                        }
+                    });
+                }, 200);
+            } else {
+                // Show the error message with animation
+                var errorMessage = document.getElementById('errorMessage');
+                errorMessage.style.display = 'block';
+                
+                // Hide the error message after 3 seconds
+                setTimeout(function () {
+                    errorMessage.style.display = 'none';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+
+</html>
